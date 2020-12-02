@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
+// connection to mySQL
 const connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -12,9 +13,11 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
+  // Begins prompts once connection is made
   startPrompts();
 });
 
+// Function to begin user prompts
 async function startPrompts() {
   let firstPrompt = await inquirer.prompt({
     name: "start",
@@ -35,6 +38,7 @@ async function startPrompts() {
   }
 }
 
+// Prompts to display if add option is chosen
 async function addPrompts() {
   let addPrompt = await inquirer.prompt({
     name: "adds",
@@ -51,6 +55,7 @@ async function addPrompts() {
   }
 }
 
+// Prompts to be displayed if view option is chosen
 async function viewPrompts() {
   let viewPrompt = await inquirer.prompt({
     name: "views",
@@ -68,6 +73,7 @@ async function viewPrompts() {
   startPrompts();
 }
 
+// Prompts to be displayed if update option is chosen
 async function updatePrompts() {
   let updatePrompt = await inquirer.prompt({
     name: "updates",
@@ -85,6 +91,7 @@ async function updatePrompts() {
   startPrompts();
 }
 
+// Prompts to be displayed if remove option is chosen
 async function removePrompts() {
   let removePrompt = await inquirer.prompt({
     name: "removes",
@@ -102,7 +109,41 @@ async function removePrompts() {
   startPrompts();
 }
 
-function addRole() {}
+function addRole() {
+    inquirer
+    .prompt([
+      {
+        name: "newRole",
+        type: "input",
+        message: "Name of new role...",
+      },
+      {
+        name: "deptId",
+        type: "input",
+        message: "Input department ID...",
+      },
+      {
+        name: "roleSalary",
+        type: "input",
+        message: "Salary for Role...",
+      }
+    ])
+    .then((data) => {
+      connection.query(
+        "INSERT INTO roles_tbl SET ?",
+        {
+          title: data.newRole,
+          salary: data.roleSalary,
+          department_id: data.deptId
+        },
+        function (err) {
+          if (err) throw err;
+          console.log("New Role was Created!");
+          startPrompts();
+        }
+      );
+    });
+}
 
 function viewRole() {}
 
@@ -110,7 +151,29 @@ function updateRole() {}
 
 function removeRole() {}
 
-function addDepartment() {}
+function addDepartment() {
+    inquirer
+    .prompt([
+      {
+        name: "newDepartment",
+        type: "input",
+        message: "Name of new department...",
+      }
+    ])
+    .then((data) => {
+      connection.query(
+        "INSERT INTO departments_tbl SET ?",
+        {
+          department_name: data.newDepartment
+        },
+        function (err) {
+          if (err) throw err;
+          console.log("New Department was Created!");
+          startPrompts();
+        }
+      );
+    });
+}
 
 function viewDepartment() {}
 
