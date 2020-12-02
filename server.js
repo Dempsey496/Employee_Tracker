@@ -119,7 +119,7 @@ function addRole() {
   inquirer
     .prompt([
       {
-        name: "newRole",
+        name: "role",
         type: "input",
         message: "Name of new role...",
       },
@@ -129,7 +129,7 @@ function addRole() {
         message: "Input department ID...",
       },
       {
-        name: "roleSalary",
+        name: "salary",
         type: "input",
         message: "Salary for Role...",
       },
@@ -138,8 +138,8 @@ function addRole() {
       connection.query(
         "INSERT INTO roles_tbl SET ?",
         {
-          title: data.newRole,
-          salary: data.roleSalary,
+          title: data.role,
+          salary: data.salary,
           department_id: data.deptId,
         },
         function (err) {
@@ -155,7 +155,7 @@ function addDepartment() {
   inquirer
     .prompt([
       {
-        name: "newDepartment",
+        name: "dept",
         type: "input",
         message: "Name of new department...",
       },
@@ -164,7 +164,7 @@ function addDepartment() {
       connection.query(
         "INSERT INTO departments_tbl SET ?",
         {
-          department_name: data.newDepartment,
+          department_name: data.dept,
         },
         function (err) {
           if (err) throw err;
@@ -217,6 +217,7 @@ function addEmployee() {
     });
 }
 
+// Viewing values functions
 function viewRole() {
   connection.query("SELECT * FROM roles_tbl", function (err, res) {
     if (err) throw err;
@@ -244,6 +245,7 @@ function viewEmployee() {
   });
 }
 
+// Updating values functions
 function updateRole() {
   connection.query("SELECT * FROM roles_tbl", (err, res) => {
     if (err) throw err;
@@ -258,7 +260,7 @@ function updateRole() {
           message: "Enter Role id to update...",
         },
         {
-          name: "newRole",
+          name: "role",
           type: "input",
           message: "Name of updated role...",
         },
@@ -268,7 +270,7 @@ function updateRole() {
           message: "Updated department ID...",
         },
         {
-          name: "roleSalary",
+          name: "salary",
           type: "input",
           message: "Updated salary for role...",
         },
@@ -278,9 +280,9 @@ function updateRole() {
           "UPDATE roles_tbl SET ? WHERE ?",
           [
             {
-              title: data.newRole,
+              title: data.role,
               department_id: data.deptId,
-              salary: data.roleSalary,
+              salary: data.salary,
             },
             { id: data.roleId },
           ],
@@ -294,10 +296,101 @@ function updateRole() {
   });
 }
 
-function updateDepartment() {}
+function updateDepartment() {
+  connection.query("SELECT * FROM departments_tbl", (err, res) => {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    console.log("");
+    inquirer
+      .prompt([
+        {
+          name: "deptId",
+          type: "input",
+          message: "Enter Department id to update...",
+        },
+        {
+          name: "dept",
+          type: "input",
+          message: "Name of updated department...",
+        },
+      ])
+      .then((data) => {
+        connection.query(
+          "UPDATE departments_tbl SET ? WHERE ?",
+          [
+            {
+              department_name: data.dept
+            },
+            { id: data.deptId },
+          ],
+          (err, res) => {
+            if (err) throw err;
+            console.log("Department successfully updated");
+            startPrompts();
+          }
+        );
+      });
+  });
+}
 
-function updateEmployee() {}
+function updateEmployee() {
+  connection.query("SELECT * FROM employees_tbl", (err, res) => {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    console.log("");
+    inquirer
+      .prompt([
+        {
+          name: "empId",
+          type: "input",
+          message: "Enter Employee ID to update..."
+        },
+        {
+          name: "firstName",
+          type: "input",
+          message: "First name of updated employee..."
+        },
+        {
+          name: "lastName",
+          type: "input",
+          message: "Last name of updated employee..."
+        },
+        {
+          name: "roleId",
+          type: "input",
+          message: "Updated role ID for employee..."
+        },
+        {
+          name: "managerId",
+          type: "input",
+          message: "Updated manager ID for employee..."
+        }
+      ])
+      .then((data) => {
+        connection.query(
+          "UPDATE employees_tbl SET ? WHERE ?",
+          [
+            {
+              first_name: data.firstName,
+              last_name: data.lastName,
+              role_id: data.roleId,
+              manager_id: data.managerId
+            },
+            { id: data.empId },
+          ],
+          (err, res) => {
+            if (err) throw err;
+            console.log("Employee successfully updated");
+            startPrompts();
+          }
+        );
+      });
+  });
+}
 
+// Removing values functions
 function removeRole() {
   connection.query("SELECT * FROM roles_tbl", (err, res) => {
     if (err) throw err;
@@ -326,6 +419,58 @@ function removeRole() {
   });
 }
 
-function removeDepartment() {}
+function removeDepartment() {
+  connection.query("SELECT * FROM departments_tbl", (err, res) => {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    console.log("");
+    inquirer
+      .prompt([
+        {
+          name: "removeDept",
+          type: "input",
+          message: "Enter Department ID to remove...",
+        },
+      ])
+      .then((data) => {
+        connection.query(
+          "DELETE FROM departments_tbl WHERE ?",
+          { id: data.removeDept },
+          (err, res) => {
+            if (err) throw err;
+            console.log("Department successfully deleted");
+            startPrompts();
+          }
+        );
+      });
+  });
+}
 
-function removeEmployee() {}
+function removeEmployee() {
+  connection.query("SELECT * FROM employees_tbl", (err, res) => {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    console.log("");
+    inquirer
+      .prompt([
+        {
+          name: "removeEmp",
+          type: "input",
+          message: "Enter Employee ID to remove...",
+        },
+      ])
+      .then((data) => {
+        connection.query(
+          "DELETE FROM employees_tbl WHERE ?",
+          { id: data.removeEmp },
+          (err, res) => {
+            if (err) throw err;
+            console.log("Employee successfully deleted");
+            startPrompts();
+          }
+        );
+      });
+  });
+}
