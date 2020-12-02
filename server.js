@@ -44,14 +44,16 @@ async function addPrompts() {
     name: "adds",
     type: "list",
     message: "What do you wish to add...?",
-    choices: ["Employee", "Department", "Role"],
+    choices: ["Employee", "Department", "Role", "Back"],
   });
   if (addPrompt.adds === "Employee") {
     addEmployee();
   } else if (addPrompt.adds === "Department") {
     addDepartment();
-  } else {
+  } else if (addPrompt.adds === "Role") {
     addRole();
+  } else {
+    startPrompts();
   }
 }
 
@@ -61,16 +63,17 @@ async function viewPrompts() {
     name: "views",
     type: "list",
     message: "What do you wish to view...?",
-    choices: ["Employee", "Department", "Role"],
+    choices: ["Employee", "Department", "Role", "Back"],
   });
   if (viewPrompt.views === "Employee") {
     viewEmployee();
   } else if (viewPrompt.views === "Department") {
     viewDepartment();
-  } else {
+  } else if (viewPrompt.views === "Role") {
     viewRole();
+  } else {
+    startPrompts();
   }
-  startPrompts();
 }
 
 // Prompts to be displayed if update option is chosen
@@ -79,16 +82,17 @@ async function updatePrompts() {
     name: "updates",
     type: "list",
     message: "What do you wish to update...?",
-    choices: ["Employee", "Department", "Role"],
+    choices: ["Employee", "Department", "Role", "Back"],
   });
   if (updatePrompt.updates === "Employee") {
     updateEmployee();
   } else if (updatePrompt.updates === "Department") {
     updateDepartment();
-  } else {
+  } else if (updatePrompt.updates === "Role") {
     updateRole();
+  } else {
+    startPrompts();
   }
-  startPrompts();
 }
 
 // Prompts to be displayed if remove option is chosen
@@ -97,20 +101,22 @@ async function removePrompts() {
     name: "removes",
     type: "list",
     message: "What do you wish to remove...?",
-    choices: ["Employee", "Department", "Role"],
+    choices: ["Employee", "Department", "Role", "Back"],
   });
   if (removePrompt.removes === "Employee") {
     removeEmployee();
   } else if (removePrompt.removes === "Department") {
     removeDepartment();
-  } else {
+  } else if (removePrompt.removes === "Role") {
     removeRole();
+  } else {
+    startPrompts();
   }
-  startPrompts();
 }
 
+// Adding values functions
 function addRole() {
-    inquirer
+  inquirer
     .prompt([
       {
         name: "newRole",
@@ -126,7 +132,7 @@ function addRole() {
         name: "roleSalary",
         type: "input",
         message: "Salary for Role...",
-      }
+      },
     ])
     .then((data) => {
       connection.query(
@@ -134,7 +140,7 @@ function addRole() {
         {
           title: data.newRole,
           salary: data.roleSalary,
-          department_id: data.deptId
+          department_id: data.deptId,
         },
         function (err) {
           if (err) throw err;
@@ -145,26 +151,20 @@ function addRole() {
     });
 }
 
-function viewRole() {}
-
-function updateRole() {}
-
-function removeRole() {}
-
 function addDepartment() {
-    inquirer
+  inquirer
     .prompt([
       {
         name: "newDepartment",
         type: "input",
         message: "Name of new department...",
-      }
+      },
     ])
     .then((data) => {
       connection.query(
         "INSERT INTO departments_tbl SET ?",
         {
-          department_name: data.newDepartment
+          department_name: data.newDepartment,
         },
         function (err) {
           if (err) throw err;
@@ -174,12 +174,6 @@ function addDepartment() {
       );
     });
 }
-
-function viewDepartment() {}
-
-function updateDepartment() {}
-
-function removeDepartment() {}
 
 function addEmployee() {
   inquirer
@@ -223,14 +217,115 @@ function addEmployee() {
     });
 }
 
-// function viewEmployee() {
+function viewRole() {
+  connection.query("SELECT * FROM roles_tbl", function (err, res) {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    startPrompts();
+  });
+}
 
-// }
+function viewDepartment() {
+  connection.query("SELECT * FROM departments_tbl", function (err, res) {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    startPrompts();
+  });
+}
 
-// function updateEmployee() {
+function viewEmployee() {
+  connection.query("SELECT * FROM employees_tbl", function (err, res) {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    startPrompts();
+  });
+}
 
-// }
+function updateRole() {
+  connection.query("SELECT * FROM roles_tbl", (err, res) => {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    console.log("");
+    inquirer
+      .prompt([
+        {
+          name: "roleId",
+          type: "input",
+          message: "Enter Role id to update...",
+        },
+        {
+          name: "newRole",
+          type: "input",
+          message: "Name of updated role...",
+        },
+        {
+          name: "deptId",
+          type: "input",
+          message: "Updated department ID...",
+        },
+        {
+          name: "roleSalary",
+          type: "input",
+          message: "Updated salary for role...",
+        },
+      ])
+      .then((data) => {
+        connection.query(
+          "UPDATE roles_tbl SET ? WHERE ?",
+          [
+            {
+              title: data.newRole,
+              department_id: data.deptId,
+              salary: data.roleSalary,
+            },
+            { id: data.roleId },
+          ],
+          (err, res) => {
+            if (err) throw err;
+            console.log("Role successfully updated");
+            startPrompts();
+          }
+        );
+      });
+  });
+}
 
-// function removeEmployee() {
+function updateDepartment() {}
 
-// }
+function updateEmployee() {}
+
+function removeRole() {
+  connection.query("SELECT * FROM roles_tbl", (err, res) => {
+    if (err) throw err;
+    console.log("");
+    console.table(res);
+    console.log("");
+    inquirer
+      .prompt([
+        {
+          name: "removeRole",
+          type: "input",
+          message: "Enter Role id to remove...",
+        },
+      ])
+      .then((data) => {
+        connection.query(
+          "DELETE FROM roles_tbl WHERE ?",
+          { id: data.removeRole },
+          (err, res) => {
+            if (err) throw err;
+            console.log("Role successfully deleted");
+            startPrompts();
+          }
+        );
+      });
+  });
+}
+
+function removeDepartment() {}
+
+function removeEmployee() {}
