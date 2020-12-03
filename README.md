@@ -45,7 +45,7 @@ Update employee roles
 ![Views option example](./assets/employee_tracker_2.png)
 ![Update option example](./assets/employee_tracker_3.png)
 ***
-![CLI prompts video](https://drive.google.com/file/d/1lRBRlKBhOHSmNmdrIBD_gKl54jrClI-m/view)
+[CLI prompts video](https://drive.google.com/file/d/1lRBRlKBhOHSmNmdrIBD_gKl54jrClI-m/view)
 ***
 
 <a name="tech"></a>
