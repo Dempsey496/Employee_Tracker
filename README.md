@@ -42,10 +42,10 @@ Update employee roles
 <a name="scrshot"></a>
 
 ## Screenshots
-![Note Taker Homepage](./assets/noteTakerApp.png)
-![Note Taker Notepad](./assets/noteTakerApp2.png)
+![Views option example](./assets/employee_tracker_2.png)
+![Update option example](./assets/employee_tracker_3.png)
 ***
-[Site through localhost](https://drive.google.com/file/d/1Spr2Da2Hp9svHxlmuhcO8B2TUZmPvnuG/view)
+<iframe src="https://drive.google.com/file/d/1lRBRlKBhOHSmNmdrIBD_gKl54jrClI-m/preview" width="640" height="480"></iframe>
 ***
 
 <a name="tech"></a>
